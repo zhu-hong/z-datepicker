@@ -5,7 +5,7 @@ import postcss from 'rollup-plugin-postcss'
 import vue from 'rollup-plugin-vue'
 
 export default defineConfig({
-  input: './src/components/DatePicker.vue',
+  input: './src/DatePicker.vue',
   output: {
     format: 'esm',
     file: 'dist/index.js',
