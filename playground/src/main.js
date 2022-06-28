@@ -5,9 +5,9 @@ import './assets/font_reset.css'
 import './assets/reset.css'
 import 'uno.css'
 
-import Starter from '../../src'
+import ElementUI from 'element-ui'
 
-Vue.use(Starter)
+Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 

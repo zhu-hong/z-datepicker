@@ -1,11 +1,16 @@
+<script>
+import DatePicker from '../../dist'
+
+export default {
+  components: {
+    DatePicker,
+  },
+}
+</script>
+
 <template>
-  <Starter class="border p-2 starter fontmono" />
+  <DatePicker />
 </template>
 
 <style lang="scss">
-.starter {
-  span {
-    text-transform: lowercase;
-  }
-}
 </style>
