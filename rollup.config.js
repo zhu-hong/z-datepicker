@@ -1,7 +1,6 @@
 import { defineConfig } from 'rollup'
 import commonjs from '@rollup/plugin-commonjs'
 import nodeResolve from '@rollup/plugin-node-resolve'
-import postcss from 'rollup-plugin-postcss'
 import vue from 'rollup-plugin-vue'
 
 export default defineConfig({
@@ -14,11 +13,6 @@ export default defineConfig({
   plugins: [
     commonjs(),
     nodeResolve(),
-    postcss({
-      extract: 'style.css',
-    }),
-    vue({
-      css: false,
-    }),
+    vue(),
   ],
 })

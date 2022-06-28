@@ -1,5 +1,5 @@
 <script>
-import DatePicker from '../../src/DatePicker.vue'
+import DatePicker from '../../dist'
 
 export default {
   components: {
