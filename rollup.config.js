@@ -5,7 +5,7 @@ import vue from 'rollup-plugin-vue'
 
 export default defineConfig({
   input: './src/DatePicker.vue',
-  external: ['vue', 'z-date-matrix'],
+  external: ['z-date-matrix'],
   output: {
     format: 'esm',
     file: 'dist/index.js',
