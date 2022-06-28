@@ -26,7 +26,8 @@
   },
   "dependencies": {
     "element-ui": "2.15.9",
-    "vue": "2.6.14"
+    "vue": "2.6.14",
+    "z-date-matrix": "1.1.0"
   },
   "peerDependencies": {
     "element-ui": "^2.15.9",

@@ -14,10 +14,12 @@ specifiers:
   vite-plugin-vue2: 2.0.1
   vue: 2.6.14
   vue-template-compiler: 2.6.14
+  z-date-matrix: 1.1.0
 
 dependencies:
   element-ui: 2.15.9_vue@2.6.14
   vue: 2.6.14
+  z-date-matrix: 1.1.0
 
 devDependencies:
   '@rollup/plugin-commonjs': 22.0.1_rollup@2.75.7
@@ -3607,3 +3609,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /z-date-matrix/1.1.0:
+    resolution: {integrity: sha512-QHVOYiGa+IWwLr7fhZkA6pBB/e4sq5rYdFuVMEIAgNxcPFQHZczOG56fpbu6BUKNJjQipNSoULgZbDLHIqFXrQ==}
+    dev: false
