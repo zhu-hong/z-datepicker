@@ -1,5 +1,5 @@
 {
-  "name": "z-datepicker",
+  "name": "@zhu-hong/z-datepicker",
   "version": "0.0.1",
   "main": "dist/index.js",
   "sideEffects": false,
@@ -33,9 +33,14 @@
     "vue": "^2.6.14"
   },
   "license": "MIT",
-  "author": {
-    "name": "zhu-hong",
-    "url": "https://github.com/zhu-hong"
+  "author": "zhu-hong",
+  "homepage": "https://github.com/zhu-hong/z-datepicker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhu-hong/z-datepicker.git"
   },
-  "homepage": "https://github.com/zhu-hong/z-datepicker"
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/zhu-hong/z-datepicker/issues"
+  }
 }
