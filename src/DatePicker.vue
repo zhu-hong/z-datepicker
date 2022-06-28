@@ -90,7 +90,9 @@ export default {
       this.viewMonth = this.month
       this.data = this.data
 
-      this.$emit('update:time', new Date(this.year, this.month, this.data, this.hour, this.minute).getTime())
+      console.log(new Date(this.year, this.month, this.date, this.hour, this.minute).getTime())
+
+      this.$emit('update:time', new Date(this.year, this.month, this.date, this.hour, this.minute).getTime())
       this.$emit('select')
     },
   },
