@@ -26,6 +26,8 @@ export default {
   },
   methods: {
     selectDate({ dateStr, year, month, date }) {
+      if(year < 2002 || year > 2052) return
+
       this.year = year
       this.month = month
       this.date = date
@@ -39,6 +41,9 @@ export default {
       this.$emit('select')
     },
     incrementMonth(count) {
+      if(count === -1 && this.viewYear === 2002 && this.viewMonth === 1) return
+      if(count === 1 && this.viewYear === 2052 && this.viewMonth === 12) return
+
       if(this.viewMonth + count > 12) {
         this.viewYear += 1
         this.viewMonth = 1
@@ -50,6 +55,9 @@ export default {
       this.viewMonth += count
     },
     incrementYear(count) {
+      if(count === -1 && this.viewYear === 2002) return
+      if(count === 1 && this.viewYear === 2052) return
+
       this.viewYear += count
     },
     selectToday() {
@@ -106,16 +114,16 @@ export default {
     <div class="z-date-picker-wrapper">
       <div class="z-date-picker-date" :style="{ 'border-right-width': withTime ? '1px' : '0' }">
         <div class="z-date-picker-date-header">
-          <svg @click="incrementYear(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M9.134 2.2c.266.267.266.7 0 .967L4.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L2.866 8.483a.685.685 0 0 1 0-.966L8.17 2.2a.68.68 0 0 1 .965 0Zm4 0c.266.267.266.7 0 .967L8.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L6.866 8.483a.685.685 0 0 1 0-.966L12.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
-          <svg @click="incrementMonth(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.134 2.2c.266.267.266.7 0 .967L6.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L4.866 8.483a.685.685 0 0 1 0-.966L10.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === 2002 }" @click="incrementYear(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M9.134 2.2c.266.267.266.7 0 .967L4.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L2.866 8.483a.685.685 0 0 1 0-.966L8.17 2.2a.68.68 0 0 1 .965 0Zm4 0c.266.267.266.7 0 .967L8.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L6.866 8.483a.685.685 0 0 1 0-.966L12.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === 2002 && viewMonth === 1 }" @click="incrementMonth(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.134 2.2c.266.267.266.7 0 .967L6.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L4.866 8.483a.685.685 0 0 1 0-.966L10.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
           <div class="z-date-picker-date-header-year-month">
             <span class="z-date-picker-date-header-year-month-year">{{ viewYear }}</span>
             <span>年</span>
             <span class="z-date-picker-date-header-year-month-month">{{ viewMonth }}</span>
             <span>月</span>
           </div>
-          <svg @click="incrementMonth(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M4.866 2.2a.685.685 0 0 0 0 .967L9.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L5.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
-          <svg @click="incrementYear(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === 2052 && viewMonth === 12 }" @click="incrementMonth(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M4.866 2.2a.685.685 0 0 0 0 .967L9.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L5.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === 2052 }" @click="incrementYear(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
         </div>
 
         <div class="z-date-picker-date-week-header">
@@ -132,6 +140,7 @@ export default {
                 { 'other-month': d.inOtherMonth },
                 { 'today': d.dateStr === todayDateStr },
                 { 'focus': d.dateStr === curdayDateStr },
+                { 'disable': d.year < 2002 || d.year > 2052 }
               ]"
               @click="selectDate(d)"
             >
@@ -196,6 +205,14 @@ export default {
       svg {
         cursor: pointer;
 
+        &.disable {
+          cursor: not-allowed;
+
+          path {
+            opacity: .5;
+          }
+        }
+
         &:hover {
           path {
             fill: #000C25;
@@ -258,6 +275,10 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        &.disable {
+          cursor: not-allowed;
+        }
 
         &:hover {
           background-color: #F6F6F6;
