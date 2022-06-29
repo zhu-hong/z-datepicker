@@ -1,6 +1,6 @@
 {
   "name": "@zhu-hong/z-datepicker",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "sideEffects": false,
   "files": [
