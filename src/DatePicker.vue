@@ -1,6 +1,18 @@
 <script>
 import { getMonthDayMatrix } from 'z-date-matrix'
 
+function getTimeDetail(time) {
+  const d = new Date(time)
+
+  return {
+    year: d.getFullYear(),
+    month: d.getMonth() + 1,
+    date: d.getDate(),
+    hour: d.getHours(),
+    minute: d.getMinutes(),
+  }
+}
+
 export default {
   props: {
     time: {
@@ -10,6 +22,14 @@ export default {
     withTime: {
       type: Boolean,
       default: false,
+    },
+    maxTime: {
+      type: Number,
+      default: new Date(2052, 11, 31).getTime(),
+    },
+    minTime: {
+      type: Number,
+      default: new Date(2002, 0, 1).getTime(),
     },
   },
   data() {
@@ -25,8 +45,8 @@ export default {
     }
   },
   methods: {
-    selectDate({ dateStr, year, month, date }) {
-      if(year < 2002 || year > 2052) return
+    selectDate({ dateStr, year, month, date, disable }) {
+      if(disable) return
 
       this.year = year
       this.month = month
@@ -35,14 +55,34 @@ export default {
       this.viewYear = year
       this.viewMonth = month
 
+      if(this.withTime) {
+        if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour < Number(this.minTimeDetail.hour)) {
+          this.hour = Number(this.minTimeDetail.hour)
+        }
+  
+        if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour === Number(this.minTimeDetail.hour) && this.minute < Number(this.minTimeDetail.minute)) {
+          this.minute = Number(this.minTimeDetail.minute)
+        }
+
+        if(this.year === this.maxTimeDetail.year && this.month === this.maxTimeDetail.month && this.date === this.maxTimeDetail.date && this.hour > Number(this.maxTimeDetail.hour)) {
+          this.hour = Number(this.maxTimeDetail.hour)
+        }
+  
+        if(this.year === this.maxTimeDetail.year && this.month === this.maxTimeDetail.month && this.date === this.maxTimeDetail.date && this.hour === Number(this.maxTimeDetail.hour) && this.minute > Number(this.maxTimeDetail.minute)) {
+          this.minute = Number(this.maxTimeDetail.minute)
+        }
+      }
+
+
       if(this.withTime) return
 
       this.$emit('update:time', new Date(dateStr).getTime())
       this.$emit('select')
     },
     incrementMonth(count) {
-      if(count === -1 && this.viewYear === 2002 && this.viewMonth === 1) return
-      if(count === 1 && this.viewYear === 2052 && this.viewMonth === 12) return
+      if(this.viewYear === this.maxTimeDetail.year && this.viewMonth + count > this.maxTimeDetail.month) return
+
+      if(this.viewYear === this.minTimeDetail.year && this.viewMonth + count < this.minTimeDetail.month) return
 
       if(this.viewMonth + count > 12) {
         this.viewYear += 1
@@ -55,19 +95,30 @@ export default {
       this.viewMonth += count
     },
     incrementYear(count) {
-      if(count === -1 && this.viewYear === 2002) return
-      if(count === 1 && this.viewYear === 2052) return
-
+      if(this.viewYear + count > this.maxTimeDetail.year) return
+      if(this.viewYear + count < this.minTimeDetail.year) return
       this.viewYear += count
     },
     selectToday() {
+      if(this.disableToday) return
+
       const d = new Date()
+
       this.viewYear = d.getFullYear()
       this.viewMonth = d.getMonth() + 1
+      
 
       this.year = this.viewYear
       this.month = this.viewMonth
       this.date = d.getDate()
+
+      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour < Number(this.minTimeDetail.hour)) {
+        this.hour = Number(this.minTimeDetail.hour)
+      }
+
+      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour === Number(this.minTimeDetail.hour) && this.minute < Number(this.minTimeDetail.minute)) {
+        this.minute = Number(this.minTimeDetail.minute)
+      }
 
       if(this.withTime) return
       
@@ -75,25 +126,37 @@ export default {
       this.$emit('select')
     },
     selectThisMonth() {
+      if(this.disableMonth) return
+
       const d = new Date()
       this.viewYear = d.getFullYear()
       this.viewMonth = d.getMonth() + 1
     },
     selectHour(hour) {
+      if(this.isDisableHour(hour)) return
       this.hour = hour
     },
     selectMinute(minute) {
+      if(this.isDisableMinute(minute)) return
       this.minute = minute
     },
     confirm() {
       this.viewYear = this.year
       this.viewMonth = this.month
-      this.data = this.data
+      this.date = this.date
 
-      console.log(new Date(this.year, this.month, this.date, this.hour, this.minute).getTime())
-
-      this.$emit('update:time', new Date(this.year, this.month, this.date, this.hour, this.minute).getTime())
+      this.$emit('update:time', new Date(this.year, this.month - 1, this.date, this.hour, this.minute).getTime())
       this.$emit('select')
+    },
+    isDisableHour(hour) {
+      if(this.year === this.maxTimeDetail.year && this.month === this.maxTimeDetail.month && this.date === this.maxTimeDetail.date && hour > Number(this.maxTimeDetail.hour)) return true
+      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && hour < Number(this.minTimeDetail.hour)) return true
+      return false
+    },
+    isDisableMinute(minute) {
+      if(this.year === this.maxTimeDetail.year && this.month === this.maxTimeDetail.month && this.date === this.maxTimeDetail.date && this.hour === Number(this.maxTimeDetail.hour) && minute > Number(this.maxTimeDetail.minute)) return true
+      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour === Number(this.minTimeDetail.hour) && minute < Number(this.minTimeDetail.minute)) return true
+      return false
     },
   },
   computed: {
@@ -105,7 +168,93 @@ export default {
       return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}` 
     },
     dayMartix() {
-      return getMonthDayMatrix(this.viewYear, this.viewMonth)
+      return getMonthDayMatrix(this.viewYear, this.viewMonth).map((week) => {
+        week = week.map((day) => {
+          let disable = false
+
+          if(day.year > this.maxTimeDetail.year) {
+            disable = true
+          }
+
+          if(day.year === this.maxTimeDetail.year && day.month > this.maxTimeDetail.month) {
+            disable = true
+          }
+
+          if(day.year === this.maxTimeDetail.year && day.month === this.maxTimeDetail.month && day.date > this.maxTimeDetail.date) {
+            disable = true
+          }
+
+          if(day.year < this.minTimeDetail.year) {
+            disable = true
+          }
+
+          if(day.year === this.minTimeDetail.year && day.month < this.minTimeDetail.month) {
+            disable = true
+          }
+
+          if(day.year === this.minTimeDetail.year && day.month === this.minTimeDetail.month && day.date < this.minTimeDetail.date) {
+            disable = true
+          }
+
+          day['disable'] = disable
+
+          return day
+        })
+
+        return week
+      })
+    },
+    maxTimeDetail() {
+      return getTimeDetail(this.maxTime)
+    },
+    minTimeDetail() {
+      return getTimeDetail(this.minTime)
+    },
+    disableToday() {
+      const d = new Date().getTime()
+
+      const { year, month, date } = getTimeDetail(d)
+
+      if(year > this.maxTimeDetail.year) return true
+
+      if(year === this.maxTimeDetail.year && month > this.maxTimeDetail.month) return true
+
+      if(year === this.maxTimeDetail.year && month === this.maxTimeDetail.month && date > this.maxTimeDetail.date) return true
+
+      if(year < this.minTimeDetail.year) return true
+
+      if(year === this.minTimeDetail.year && month < this.minTimeDetail.month) return true
+
+      if(year === this.minTimeDetail.year && month === this.minTimeDetail.month && date < this.minTimeDetail.date) return true
+
+      return false
+    },
+    disableMonth() {
+      const d = new Date().getTime()
+
+      const { year, month } = getTimeDetail(d)
+
+      if(year > this.maxTimeDetail.year) return true
+
+      if(year === this.maxTimeDetail.year && month > this.maxTimeDetail.month) return true
+
+      if(year < this.minTimeDetail.year) return true
+
+      if(year === this.minTimeDetail.year && month < this.minTimeDetail.month) return true
+
+      return false
+    },
+  },
+  watch: {
+    time(val) {
+      const d = new Date(val)
+      this.viewYear = d.getFullYear()
+      this.viewMonth = d.getMonth() + 1
+      this.year = d.getFullYear()
+      this.month = d.getMonth() + 1
+      this.date = d.getDate()
+      this.hour = d.getHours()
+      this.minute = d.getMinutes()
     },
   },
 }
@@ -116,16 +265,16 @@ export default {
     <div class="z-date-picker-wrapper">
       <div class="z-date-picker-date" :style="{ 'border-right-width': withTime ? '1px' : '0' }">
         <div class="z-date-picker-date-header">
-          <svg :class="{ 'disable': viewYear === 2002 }" @click="incrementYear(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M9.134 2.2c.266.267.266.7 0 .967L4.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L2.866 8.483a.685.685 0 0 1 0-.966L8.17 2.2a.68.68 0 0 1 .965 0Zm4 0c.266.267.266.7 0 .967L8.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L6.866 8.483a.685.685 0 0 1 0-.966L12.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
-          <svg :class="{ 'disable': viewYear === 2002 && viewMonth === 1 }" @click="incrementMonth(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.134 2.2c.266.267.266.7 0 .967L6.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L4.866 8.483a.685.685 0 0 1 0-.966L10.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === minTimeDetail.year }" @click="incrementYear(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M9.134 2.2c.266.267.266.7 0 .967L4.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L2.866 8.483a.685.685 0 0 1 0-.966L8.17 2.2a.68.68 0 0 1 .965 0Zm4 0c.266.267.266.7 0 .967L8.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L6.866 8.483a.685.685 0 0 1 0-.966L12.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === minTimeDetail.year && viewMonth === minTimeDetail.month }" @click="incrementMonth(-1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.134 2.2c.266.267.266.7 0 .967L6.313 8l4.82 4.833c.267.267.267.7 0 .967a.68.68 0 0 1-.964 0L4.866 8.483a.685.685 0 0 1 0-.966L10.17 2.2a.68.68 0 0 1 .965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
           <div class="z-date-picker-date-header-year-month">
             <span class="z-date-picker-date-header-year-month-year">{{ viewYear }}</span>
             <span>年</span>
             <span class="z-date-picker-date-header-year-month-month">{{ viewMonth }}</span>
             <span>月</span>
           </div>
-          <svg :class="{ 'disable': viewYear === 2052 && viewMonth === 12 }" @click="incrementMonth(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M4.866 2.2a.685.685 0 0 0 0 .967L9.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L5.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
-          <svg :class="{ 'disable': viewYear === 2052 }" @click="incrementYear(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === maxTimeDetail.year && viewMonth === maxTimeDetail.month }" @click="incrementMonth(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M4.866 2.2a.685.685 0 0 0 0 .967L9.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L5.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
+          <svg :class="{ 'disable': viewYear === maxTimeDetail.year }" @click="incrementYear(1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M6.866 2.2a.685.685 0 0 0 0 .967L11.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L7.83 2.2a.68.68 0 0 0-.965 0Zm-4 0a.685.685 0 0 0 0 .967L7.687 8l-4.82 4.833a.685.685 0 0 0 0 .967.68.68 0 0 0 .964 0l5.303-5.317a.685.685 0 0 0 0-.966L3.83 2.2a.68.68 0 0 0-.965 0Z" fill="#646A73" fill-rule="evenodd"/></svg>
         </div>
 
         <div class="z-date-picker-date-week-header">
@@ -142,7 +291,7 @@ export default {
                 { 'other-month': d.inOtherMonth },
                 { 'today': d.dateStr === todayDateStr },
                 { 'focus': d.dateStr === curdayDateStr },
-                { 'disable': d.year < 2002 || d.year > 2052 }
+                { 'disable': d.disable },
               ]"
               @click="selectDate(d)"
             >
@@ -155,17 +304,17 @@ export default {
         <div class="z-date-picker-time-header">{{ `${hour.toString().padStart(2, 0)}:${minute.toString().padStart(2, 0)}` }}</div>
         <div class="z-date-picker-time-wrapper">
           <div class="z-date-picker-time-wrapper-hour">
-            <span @click="selectHour(n - 1)" v-for="n of 24" :key="n" :class="{ 'active': n - 1 === hour }">{{ (n - 1).toString().padStart(2, 0) }}</span>
+            <span @click="selectHour(n - 1)" v-for="n of 24" :key="n" :class="{ 'active': n - 1 === hour, 'disable': isDisableHour(n - 1) }">{{ (n - 1).toString().padStart(2, 0) }}</span>
           </div>
           <div class="z-date-picker-time-wrapper-minute">
-            <span @click="selectMinute(n - 1)" v-for="n of 60" :key="n" :class="{ 'active': n - 1 === minute }">{{ (n - 1).toString().padStart(2, 0) }}</span>
+            <span @click="selectMinute(n - 1)" v-for="n of 60" :key="n" :class="{ 'active': n - 1 === minute, 'disable': isDisableMinute(n - 1) }">{{ (n - 1).toString().padStart(2, 0) }}</span>
           </div>
         </div>
       </div>
     </div>
     <div class="z-date-picker-date-shortcut">
-      <span class="z-date-picker-date-shortcut-today" @click="selectToday">今天</span>
-      <span v-if="withTime" class="z-date-picker-date-shortcut-month" @click="selectThisMonth">本月</span>
+      <span :class="['z-date-picker-date-shortcut-today', { 'disable': disableToday }]" @click="selectToday">今天</span>
+      <span v-if="withTime" :class="['z-date-picker-date-shortcut-month', { 'disable': disableMonth }]" @click="selectThisMonth">本月</span>
       <el-button v-if="withTime" size="mini" type="primary" @click="confirm">确定</el-button>
     </div>
   </div>
@@ -215,7 +364,7 @@ export default {
           }
         }
 
-        &:hover {
+        &:not(.disable):hover {
           path {
             fill: #000C25;
           }
@@ -278,12 +427,13 @@ export default {
         justify-content: center;
         align-items: center;
 
-        &.disable {
-          cursor: not-allowed;
-        }
-
         &:hover {
           background-color: #F6F6F6;
+        }
+
+        &.disable {
+          cursor: not-allowed;
+          opacity: .4;
         }
 
         &.other-month {
@@ -318,8 +468,13 @@ export default {
       &-today, &-month {
         cursor: pointer;
 
+        &.disable {
+          cursor: not-allowed;
+          opacity: .5;
+        }
+
         &:hover {
-          opacity: .7;
+          opacity: .5;
         }
       }
 
@@ -374,6 +529,11 @@ export default {
           padding: 0 10px;
           display: flex;
           align-items: center;
+
+          &.disable {
+            cursor: not-allowed;
+            opacity: .5;
+          }
 
           &.active {
             background-color: rgba(11, 87, 210, 0.1);
