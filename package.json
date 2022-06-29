@@ -1,7 +1,8 @@
 {
   "name": "@zhu-hong/z-datepicker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
+  "description": "date_picker or with time",
   "sideEffects": false,
   "files": [
     "dist"
@@ -40,7 +41,12 @@
     "type": "git",
     "url": "git+https://github.com/zhu-hong/z-datepicker.git"
   },
-  "keywords": [],
+  "keywords": [
+    "vue",
+    "element-ui",
+    "datepicker",
+    "date picker"
+  ],
   "bugs": {
     "url": "https://github.com/zhu-hong/z-datepicker/issues"
   }
