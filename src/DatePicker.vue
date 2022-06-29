@@ -100,7 +100,7 @@ export default {
       this.viewYear += count
     },
     selectToday() {
-      if(this.disableToday) return
+      if(this.canIuseSelectToday) return
 
       const d = new Date()
 
@@ -112,21 +112,17 @@ export default {
       this.month = this.viewMonth
       this.date = d.getDate()
 
-      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour < Number(this.minTimeDetail.hour)) {
-        this.hour = Number(this.minTimeDetail.hour)
-      }
-
-      if(this.year === this.minTimeDetail.year && this.month === this.minTimeDetail.month && this.date === this.minTimeDetail.date && this.hour === Number(this.minTimeDetail.hour) && this.minute < Number(this.minTimeDetail.minute)) {
-        this.minute = Number(this.minTimeDetail.minute)
-      }
-
       if(this.withTime) return
       
-      this.$emit('update:time', d.getTime())
+      this.$emit('update:time', new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+      ).getTime())
       this.$emit('select')
     },
     selectThisMonth() {
-      if(this.disableMonth) return
+      if(this.canIuseSelectThisMonth) return
 
       const d = new Date()
       this.viewYear = d.getFullYear()
@@ -210,7 +206,7 @@ export default {
     minTimeDetail() {
       return getTimeDetail(this.minTime)
     },
-    disableToday() {
+    canIuseSelectToday() {
       const d = new Date().getTime()
 
       const { year, month, date } = getTimeDetail(d)
@@ -229,7 +225,7 @@ export default {
 
       return false
     },
-    disableMonth() {
+    canIuseSelectThisMonth() {
       const d = new Date().getTime()
 
       const { year, month } = getTimeDetail(d)
@@ -313,8 +309,8 @@ export default {
       </div>
     </div>
     <div class="z-date-picker-date-shortcut">
-      <span :class="['z-date-picker-date-shortcut-today', { 'disable': disableToday }]" @click="selectToday">今天</span>
-      <span v-if="withTime" :class="['z-date-picker-date-shortcut-month', { 'disable': disableMonth }]" @click="selectThisMonth">本月</span>
+      <span :class="['z-date-picker-date-shortcut-today', { 'disable': canIuseSelectToday }]" @click="selectToday">今天</span>
+      <span v-if="withTime" :class="['z-date-picker-date-shortcut-month', { 'disable': canIuseSelectThisMonth }]" @click="selectThisMonth">本月</span>
       <el-button v-if="withTime" size="mini" type="primary" @click="confirm">确定</el-button>
     </div>
   </div>
